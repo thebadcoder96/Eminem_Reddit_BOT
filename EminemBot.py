@@ -15,13 +15,11 @@ def totime(ms):
     hours = math.floor((ms/(1000*60*60))%24)
 
     if hours == 1:
-        dur= f'{hours} hr {minutes} mins'
+        dur= f'{hours}:{minutes}:{seconds}'
     elif minutes == 0 and hours == 0:
-        dur= f'{seconds} secs'
+        dur= f'00:00:{seconds}'
     else:
-        dur= f' {minutes} mins {seconds} secs'
-
-
+        dur= f'00:{minutes}:{seconds}'
     return dur
 
 #Search Spotify for song/album
@@ -37,53 +35,60 @@ def spotify_search(comment):
     
     #print(b)
     if '!album' in comment:
-        name = comment.split('!album ')[1]
-        results = sp.search(q="eminem" + " " + name, type="album", limit=1)
-        if results['albums']['items']:
-            results = results['albums']['items'][0]
-            # Extracting needed information
-            link = results['external_urls']['spotify']
-            pop = sp.album(results['id'])['popularity']
-            songs = sp.album(results['id'])['total_tracks']
-            
-            #Calculating total duration of the album
-            tot=0
-            tracks = sp.album(results['id'])['tracks']['items']
-            for i in range(len(tracks)):
-                tot +=(tracks[i]['duration_ms'])
-            #print(link, pop, songs, duration)
-            return create_message(name, link, pop, songs=songs, duration=totime(tot))
-        else:
-            m = (f'{name} album not found on spotify.:( Please be more specific.'
-            '\n\n^beep ^boop! ^I ^am ^a ^bot ^that ^finds ^stats ^for ^***Eminem*** ^songs!  ^Find ^out ^more [^about ^me ^here! ](https://www.reddit.com/r/u_eminem_bot)'
-                )
-            print(m)
-            return m
+        try:
+            name = comment.split('!album ')[1]
+            results = sp.search(q="eminem" + " " + name, type="album", limit=1)
+            if results['albums']['items']:
+                results = results['albums']['items'][0]
+                # Extracting needed information
+                link = results['external_urls']['spotify']
+                pop = sp.album(results['id'])['popularity']
+                songs = sp.album(results['id'])['total_tracks']
+                #Calculating total duration of the album
+                tot=0
+                tracks = sp.album(results['id'])['tracks']['items']
+                for i in range(len(tracks)):
+                    tot +=(tracks[i]['duration_ms'])
+                #print(link, pop, songs)
+                return create_message(name, link, pop, songs=songs, duration=totime(tot))
+            else:
+                m = (f'{name} album not found on spotify.:( Please be more specific.'
+                    '\n\n^beep ^boop! ^I ^am ^a ^bot ^that ^finds ^stats ^for ^***Eminem*** ^songs!  ^Find ^out ^more [^about ^me ^here! ](https://www.reddit.com/r/u_eminem_bot)'
+                    )
+                print(m)
+                return m
+        except Exception as e:
+            print(e)
+            return 'Error. Could not find album name.'
 
     else:
-        name = comment.split('!song ')[1]
-        #Searching Spotify
-        results = sp.search(q="eminem" + " track:" + name, type="track", limit=1)
-        if results['tracks']['items']:
-            results = results['tracks']['items'][0]
-            # Extracting needed information
-            link = results['external_urls']['spotify']
-            features = sp.audio_features(results['id'])
-            pop = sp.track(results['id'])['popularity']
-            #print(link, "\n", features[0], "\n" ,pop)
-            return create_message(name, link, pop, features=features[0])
-        else:
-            m = (f'{name} song not found on spotify.:( Please be more specific.'
-                '\n\n^beep ^boop! ^I ^am ^a ^bot ^that ^finds ^stats ^for ^***Eminem*** ^songs!  ^Find ^out ^more [^about ^me ^here! ](https://www.reddit.com/r/u_eminem_bot)'
-                )
-            print(m)
-            return m
-
+        try:
+            name = comment.split('!song ')[1]
+            #Searching Spotify
+            results = sp.search(q="eminem" + " track:" + name, type="track", limit=1)
+            if results['tracks']['items']:
+                results = results['tracks']['items'][0]
+                # Extracting needed information
+                link = results['external_urls']['spotify']
+                features = sp.audio_features(results['id'])
+                pop = sp.track(results['id'])['popularity']
+                #print(link, "\n", features[0], "\n" ,pop)
+                return create_message(name, link, pop, features=features[0])
+            else:
+                m = (f'{name} song not found on spotify.:( Please be more specific.'
+                    '\n\n^beep ^boop! ^I ^am ^a ^bot ^that ^finds ^stats ^for ^***Eminem*** ^songs!  ^Find ^out ^more [^about ^me ^here! ](https://www.reddit.com/r/u_eminem_bot)'
+                     )
+                print(m)
+                return m
+        except Exception as e:
+            print(e)
+            return 'Error. Could not find song name.'
 
 #Function to create the reply
 def create_message(name, link, pop, songs=0,features={}, duration=0):
     if songs == 0:
-        dur= totime(features["duration_ms"])
+        name = name.title()
+        dur = totime(features["duration_ms"])
         
         if features["mode"] == 0:
             mode='Minor'
@@ -107,6 +112,7 @@ def create_message(name, link, pop, songs=0,features={}, duration=0):
                    f'|**Instrumentalness**|{features["instrumentalness"]}| Property: only music |\n'
                    f'|**Liveness**|{features["liveness"]}| Context: Song performed Live |\n'
                    f'|**Acousticness**|{features["acousticness"]}| Context: Acoustic song |\n'
+                   '\n\n #### [What it all means](https://www.reddit.com/user/Eminem_Bot/comments/p0t572/what_it_all_means/)'
                    '\n\n^beep ^boop! ^I ^am ^a ^bot ^that ^finds ^stats ^for ^***Eminem*** ^songs!  ^Find ^out ^more [^about ^me ^here! ](https://www.reddit.com/r/u_eminem_bot)'
 
                    )
@@ -119,6 +125,8 @@ def create_message(name, link, pop, songs=0,features={}, duration=0):
                    f'|**No of Songs**|{songs}|\n'
                    f'|**Popularity**|{pop}%|\n'
                    f'|**Duration**|{duration}|\n'
+                   '\n\n  **[What it all means](https://www.reddit.com/user/Eminem_Bot/comments/p0t572/what_it_all_means/)**'
+
                    '\n\n^beep ^boop! ^I ^am ^a ^bot ^that ^finds ^stats ^for ^***Eminem*** ^songs!  ^Find ^out ^more [^about ^me ^here! ](https://www.reddit.com/r/u_eminem_bot)'
 
                   )
@@ -127,11 +135,10 @@ def create_message(name, link, pop, songs=0,features={}, duration=0):
     #print(type(message))
     return message
 
-
 #Function to search for comments
 def runbot(reddit, replied_to):
     print("Fetching comments..")
-    for comment in reddit.subreddit('test').stream.comments(skip_existing=False):
+    for comment in reddit.subreddit('all').stream.comments(skip_existing=False):
         if ('!song' in comment.body.lower() or '!album' in comment.body.lower()) and (comment.id not in replied_to) and (comment.author != reddit.user.me()): 
             print('found!' + comment.body)
             message = spotify_search(comment.body.lower())
@@ -144,10 +151,7 @@ def runbot(reddit, replied_to):
             with open('replied.txt','a') as f:
                 f.write(comment.id + '\n')
             time.sleep(5)
-        time.sleep(5)
-            
-    
-            
+        #time.sleep(5)
 
 def main():
     with open('replied.txt','r') as f:
