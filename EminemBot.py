@@ -161,4 +161,10 @@ def main():
     reddit = authenticate()
     runbot(reddit, replied_to)
 
-if __name__ == '__main__':main()
+if __name__ == '__main__':
+    while True:
+        try:
+            main()
+        except Exception as e:
+            print('error occurred, rebooting in 30 seconds... ',e.message)
+            time.sleep(30)
