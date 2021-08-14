@@ -138,7 +138,7 @@ def create_message(name, link, pop, songs=0,features={}, duration=0):
 #Function to search for comments
 def runbot(reddit, replied_to):
     print("Fetching comments..")
-    for comment in reddit.subreddit('all').stream.comments(skip_existing=False):
+    for comment in reddit.subreddit('eminem').stream.comments(skip_existing=False):
         if ('!song' in comment.body.lower() or '!album' in comment.body.lower()) and (comment.id not in replied_to) and (comment.author != reddit.user.me()): 
             print('found!' + comment.body)
             message = spotify_search(comment.body.lower())
