@@ -1,6 +1,6 @@
 # Eminem Reddit Bot
 
-This is a reddit bot that will search for any Eminem song or album and give you the link and statistics for a song pulled from Spotify API as the reply message.
+This is a reddit bot that will search for any Eminem song or album and give you the link and some statistics for a song pulled from the Spotify API and Youtube Data API v3 as the reply message.
 
 ### How to use
 Simply comment '!song' or '!album' followed by the song or album you would like to search anywhere on reddit. For example:
@@ -17,4 +17,4 @@ Simply comment '!song' or '!album' followed by the song or album you would like 
 - Must also have an Spotify account to get the ```client_id``` and ```client_secret``` for spotify as well.
 - Please enter the credentials in the [*praw.ini*](/praw.ini) file.
 
-**Note:** I am still working on this project so if you have any feedback, insights or suggestions for improvement, please ping me on [Reddit](https://www.reddit.com/user/thebatgamer/).
+**Note:** If you have any feedback, insights or suggestions for improvement, please ping me on [Reddit](https://www.reddit.com/user/thebatgamer/).

@@ -194,8 +194,6 @@ def create_message(name, link, pop, songs=0,features={}, duration=0):
 
                   )
 
-
-    #print(type(message))
     return message
 
 #Function to search for comments
@@ -207,7 +205,7 @@ def runbot(reddit):
             message = str(youtube_search(comment.body.lower())) 
             if message=='None':message=''
             message += spotify_search(comment.body.lower())
-#             print(message + '\n')
+#           print(message + '\n')
             comment.reply(message)
             print("Replied to : "+ comment.id)
             time.sleep(5)
