@@ -12,7 +12,7 @@ Simply comment '!song' or '!album' followed by the song or album you would like 
 ### How to run
 
 - Install required packages by ```pip install -r requirements.txt```.
-- ```PRAW``` and ```spotipy``` are the main libraries used.
+- ```PRAW```, ```spotipy```, ```google-api-python-client``` are the main libraries used.
 - Must have a reddit account. Visit the [apps page](https://www.reddit.com/prefs/apps) to get your  ```client_id``` and ```client_secret```.
 - Must also have an Spotify account to get the ```client_id``` and ```client_secret``` for spotify as well.
 - Please enter the credentials in the [*praw.ini*](/praw.ini) file.
