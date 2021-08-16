@@ -1,5 +1,7 @@
 import praw, time, spotipy, configparser, math
 from spotipy.oauth2 import SpotifyClientCredentials
+from googleapiclient.discovery import build
+from numerize import numerize
 
 #Authentication
 def authenticate():
@@ -13,7 +15,8 @@ def totime(ms):
     seconds = math.floor((ms/1000)%60)
     minutes = math.floor((ms/(1000*60))%60)
     hours = math.floor((ms/(1000*60*60))%24)
-
+    if seconds ==0: seconds='00'
+    
     if hours == 1:
         dur= f'{hours}:{minutes}:{seconds}'
     elif minutes == 0 and hours == 0:
@@ -21,6 +24,62 @@ def totime(ms):
     else:
         dur= f'00:{minutes}:{seconds}'
     return dur
+
+
+#Searching in Youtube
+def youtube_search(comment):
+    #Reading from praw.ini
+    config = configparser.ConfigParser()
+    config.read('praw.ini')
+    #Connecting to youtube Data API v3
+    youtube= build('youtube','v3',developerKey=config['youtube']['key'])
+        
+    #Eminem related channel Ids
+    channels=['UC20vb-R_px4CguHzzBPhoyQ','UCfM3zsQsOnfWNUppiycmBuw','UChSYQS0A6GO8wvSKAbaskQg',
+              'UChGnS1Cj7EGy_Wts9oYd4jA','UCAiRvtfZ7BvphY8Xvhi6Qyw','UCedvOgsKFzcK3hA5taf3KoQ','UCtylTUUVIGY_i5afsQYeBZA']
+    if '!song' in comment:
+        try:
+            name = comment.split('!song ')[1]
+            em = youtube.search().list(part='snippet',q=name+'eminem').execute()
+            #Searching for best result
+            if em['items'][0]['snippet']['channelId'] not in channels:
+                for i in range(1,len(em['items'])):
+                    if (em['items'][i]['snippet']['channelId'] in channels):
+                        break
+                if (i == len(em['items'])-1):
+                    vid_id = em['items'][0]['id']['videoId']
+                else:
+                    vid_id = em['items'][i]['id']['videoId']
+            else:
+                vid_id = em['items'][0]['id']['videoId']
+            #Extracting information
+            link = f'https://www.youtube.com/watch?v={vid_id}'
+            stats = youtube.videos().list(id=vid_id, part='statistics').execute()['items'][0]['statistics']
+            return create_yreply(name, link=link, stats=stats)
+        
+        except Exception as e:
+            print(e)
+            m = ('Could not find song on youtube.\n\n'
+                    '\n\n^beep ^boop! ^I ^am ^a ^bot ^that ^finds ^stats ^for ^***Eminem*** ^songs!  ^Find ^out ^more [^about ^me ^here! ](https://www.reddit.com/r/u_eminem_bot)')
+            return create_yreply(name, m=m)
+
+#Creating youtube reply
+def create_yreply(name, link='', stats={}, m=''):
+    name = name.title()
+    if m == '':
+        message =(f'The **Youtube link** for [{name} is here]({link}). \n\n'
+                'Below are some stats of the songs from youtube.  \n\n'
+                '| Stats | Values | Exact Values |\n'
+                '|:---:|---:|:--:|\n'
+                f'|**Views**   |{numerize.numerize(int(stats["viewCount"]))}|{int(stats["viewCount"]):,}| \n'
+                f'|**Likes**   |{numerize.numerize(int(stats["likeCount"]))}| {int(stats["likeCount"]):,}|\n'
+                f'|**Dislikes**|{numerize.numerize(int(stats["dislikeCount"]))}|{int(stats["dislikeCount"]):,}| \n'
+                f'|**Comments**|{numerize.numerize(int(stats["commentCount"]))}|{int(stats["commentCount"]):,}|\n\n'
+                )
+    else:
+        message = m
+    return message
+
 
 #Search Spotify for song/album
 def spotify_search(comment):
@@ -59,7 +118,8 @@ def spotify_search(comment):
                 return m
         except Exception as e:
             print(e)
-            return 'Error. Could not find album name.'
+            return ('Error. Could not find album name on spotify.'
+                    '\n\n^beep ^boop! ^I ^am ^a ^bot ^that ^finds ^stats ^for ^***Eminem*** ^songs!  ^Find ^out ^more [^about ^me ^here! ](https://www.reddit.com/r/u_eminem_bot)')
 
     else:
         try:
@@ -74,6 +134,7 @@ def spotify_search(comment):
                 pop = sp.track(results['id'])['popularity']
                 #print(link, "\n", features[0], "\n" ,pop)
                 return create_message(name, link, pop, features=features[0])
+            
             else:
                 m = (f'{name} song not found on spotify.:( Please be more specific.'
                     '\n\n^beep ^boop! ^I ^am ^a ^bot ^that ^finds ^stats ^for ^***Eminem*** ^songs!  ^Find ^out ^more [^about ^me ^here! ](https://www.reddit.com/r/u_eminem_bot)'
@@ -82,7 +143,9 @@ def spotify_search(comment):
                 return m
         except Exception as e:
             print(e)
-            return 'Error. Could not find song name.'
+            return ('Error. Could not find song name on spotify.'
+                    '\n\n^beep ^boop! ^I ^am ^a ^bot ^that ^finds ^stats ^for ^***Eminem*** ^songs!  ^Find ^out ^more [^about ^me ^here! ](https://www.reddit.com/r/u_eminem_bot)')
+
 
 #Function to create the reply
 def create_message(name, link, pop, songs=0,features={}, duration=0):
@@ -95,7 +158,7 @@ def create_message(name, link, pop, songs=0,features={}, duration=0):
         else:
             mode='Major'
         
-        message = (f'The spotify link for [{name} is here]({link}). \n\n'
+        message = (f'The **Spotify link** for [{name} is here]({link}). \n\n'
                    f'Below are some stats and audio analysis for {name} from Spotify:\n\n'
                    '| Stat | Value |  Description |\n'
                    '|:----:|------:|:------------:|\n'
@@ -118,7 +181,7 @@ def create_message(name, link, pop, songs=0,features={}, duration=0):
                    )
 
     else:
-        message = (f'The spotify link for the album [{name} is here]({link}). \n'
+        message = (f'The **Spotify link** for the album [{name} is here]({link}). \n'
                    f'Below are some stats for the album from Spotify:\n\n'
                    '| Stat | Value |\n'
                    '|:----:|------:|\n'
@@ -138,12 +201,13 @@ def create_message(name, link, pop, songs=0,features={}, duration=0):
 #Function to search for comments
 def runbot(reddit, replied_to):
     print("Fetching comments..")
-    for comment in reddit.subreddit('eminem').stream.comments(skip_existing=False):
+    for comment in reddit.subreddit('test').stream.comments(skip_existing=False):
         if ('!song' in comment.body.lower() or '!album' in comment.body.lower()) and (comment.id not in replied_to) and (comment.author != reddit.user.me()): 
             print('found!' + comment.body)
-            message = spotify_search(comment.body.lower())
-            #print(type(message))
-            #print(message + '\n')
+            message = str(youtube_search(comment.body.lower())) 
+            if message=='None':message=''
+            message += spotify_search(comment.body.lower())
+#             print(message + '\n')
             comment.reply(message)
             print("Replied to : "+ comment.id)
             replied_to.append(comment.id)
@@ -152,6 +216,7 @@ def runbot(reddit, replied_to):
                 f.write(comment.id + '\n')
             time.sleep(5)
         #time.sleep(5)
+
 
 def main():
     with open('replied.txt','r') as f:
@@ -166,5 +231,5 @@ if __name__ == '__main__':
         try:
             main()
         except Exception as e:
-            print('error occurred, rebooting in 30 seconds... ',e.message)
+            print(f'{e} \n error occurred, rebooting in 30 seconds... ')
             time.sleep(30)
