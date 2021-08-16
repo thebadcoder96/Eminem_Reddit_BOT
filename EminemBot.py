@@ -201,7 +201,7 @@ def create_message(name, link, pop, songs=0,features={}, duration=0):
 #Function to search for comments
 def runbot(reddit):
     print("Fetching comments..")
-    for comment in reddit.subreddit('test').stream.comments(skip_existing=False):
+    for comment in reddit.subreddit('eminem').stream.comments(skip_existing=True):
         if ('!song' in comment.body.lower() or '!album' in comment.body.lower()) and (comment.author != reddit.user.me()): 
             print('found!' + comment.body)
             message = str(youtube_search(comment.body.lower())) 
