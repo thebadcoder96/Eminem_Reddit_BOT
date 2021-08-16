@@ -199,10 +199,10 @@ def create_message(name, link, pop, songs=0,features={}, duration=0):
     return message
 
 #Function to search for comments
-def runbot(reddit, replied_to):
+def runbot(reddit):
     print("Fetching comments..")
     for comment in reddit.subreddit('test').stream.comments(skip_existing=False):
-        if ('!song' in comment.body.lower() or '!album' in comment.body.lower()) and (comment.id not in replied_to) and (comment.author != reddit.user.me()): 
+        if ('!song' in comment.body.lower() or '!album' in comment.body.lower()) and (comment.author != reddit.user.me()): 
             print('found!' + comment.body)
             message = str(youtube_search(comment.body.lower())) 
             if message=='None':message=''
@@ -210,21 +210,13 @@ def runbot(reddit, replied_to):
 #             print(message + '\n')
             comment.reply(message)
             print("Replied to : "+ comment.id)
-            replied_to.append(comment.id)
-            
-            with open('replied.txt','a') as f:
-                f.write(comment.id + '\n')
             time.sleep(5)
         #time.sleep(5)
 
 
 def main():
-    with open('replied.txt','r') as f:
-        replied_to= f.read().split('\n')
-        replied_to= list(filter(None, replied_to))
-        
     reddit = authenticate()
-    runbot(reddit, replied_to)
+    runbot(reddit)
 
 if __name__ == '__main__':
     while True:
