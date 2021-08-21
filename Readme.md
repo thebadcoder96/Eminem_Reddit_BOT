@@ -1,9 +1,9 @@
 # Eminem Reddit Bot
 
-This is a reddit bot that will search for any Eminem song or album and give you the link and some statistics for a song pulled from the Spotify API and Youtube Data API v3 as the reply message.
+This is a reddit bot that will search for any Eminem song or album and give you the link and some statistics for a song pulled from the Spotify API and Youtube Data API v3 as the reply message. This bot is currently only monitoring [r/Eminem](https://www.reddit.com/r/eminem), [r/Music](https://www.reddit.com/r/music/), and [r/hiphopheads](https://www.reddit.com/r/hiphopheads/)
 
 ### How to use
-Simply comment '!song' or '!album' followed by the song or album you would like to search anywhere on reddit. For example:
+Simply comment '!song' or '!album' followed by the song or album you would like to search anywhere on [r/Eminem](https://www.reddit.com/r/eminem), [r/Music](https://www.reddit.com/r/music/), and [r/hiphopheads](https://www.reddit.com/r/hiphopheads/). For example:
 
 ```!song Survival``` or ```!album Kamikaze```
 
@@ -16,5 +16,3 @@ Simply comment '!song' or '!album' followed by the song or album you would like 
 - Must have a reddit account. Visit the [apps page](https://www.reddit.com/prefs/apps) to get your  ```client_id``` and ```client_secret```.
 - Must also have an Spotify account to get the ```client_id``` and ```client_secret``` for spotify as well.
 - Please enter the credentials in the [*praw.ini*](/praw.ini) file.
-
-**Note:** If you have any feedback, insights or suggestions for improvement, please ping me on [Reddit](https://www.reddit.com/user/thebatgamer/).
