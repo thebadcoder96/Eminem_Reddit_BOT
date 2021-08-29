@@ -1,6 +1,14 @@
 # Eminem Reddit Bot
 
-This is a reddit bot that will search for any Eminem song or album and give you the link and some statistics for a song pulled from the Spotify API and Youtube Data API v3 as the reply message. This bot is currently only monitoring [r/Eminem](https://www.reddit.com/r/eminem), [r/Music](https://www.reddit.com/r/music/), and [r/hiphopheads](https://www.reddit.com/r/hiphopheads/)
+This is a reddit bot that will search for any Eminem song or album and give you the link and some statistics for a song pulled from the Spotify API and Youtube Data API v3 as the reply message. This bot is currently only monitoring [r/Eminem](https://www.reddit.com/r/eminem), [r/Music](https://www.reddit.com/r/music/), and [r/hiphopheads](https://www.reddit.com/r/hiphopheads/).
+
+### Motivation
+I love [Reddit](https://www.reddit.com/), I love Eminem and I love Python! So I combined all of them to program an account to reply with the data from Spotify and YouTube of any Eminem songs :)
+
+### Frameworks
+- PRAW - Framework build on top of Reddit API.
+- Spotipy - Library for the Spotify Web API.
+- google-api-python-client - Library to acess Youtube Data API.
 
 ### How to use
 Simply comment '!song' or '!album' followed by the song or album you would like to search anywhere on [r/Eminem](https://www.reddit.com/r/eminem), [r/Music](https://www.reddit.com/r/music/), and [r/hiphopheads](https://www.reddit.com/r/hiphopheads/). For example:
