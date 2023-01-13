@@ -1,4 +1,4 @@
-# Eminem Reddit Bot
+# Reddit Bot that displays Eminem songs stats from Spotify and Youtube
 
 This is a reddit bot that will search for any Eminem song or album and give you the link and some statistics for a song pulled from the Spotify API and Youtube Data API v3 as the reply message. This bot is currently only monitoring [r/Eminem](https://www.reddit.com/r/eminem), [r/Music](https://www.reddit.com/r/music/), and [r/hiphopheads](https://www.reddit.com/r/hiphopheads/).
 
